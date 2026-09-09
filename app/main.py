@@ -33,3 +33,13 @@ def criar_livro(
     sessao_banco.refresh(novo_livro)
 
     return novo_livro
+
+@app.get("/livros", response_model=list[LivroResposta], tags=["Livros"])
+def listar_livros(
+    sessao_banco: Session = Depends(obter_sessao_banco)
+):
+    consulta = select(Livro)
+    resultado = sessao_banco.execute(consulta)
+    livros = resultado.scalars().all()
+
+    return livros
