@@ -43,3 +43,20 @@ def listar_livros(
     livros = resultado.scalars().all()
 
     return livros
+
+@app.get("/livros/{id_livro}", response_model=LivroResposta, tags=["Livros"])
+def obter_livro(
+    id_livro: int,
+    sessao_banco: Session = Depends(obter_sessao_banco)
+):
+    consulta = select(Livro).where(Livro.id == id_livro)
+    resultado = sessao_banco.execute(consulta)
+    livro = resultado.scalar_one_or_none()
+
+    if livro is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Livro não encontrado"
+        )
+
+    return livro
